@@ -3,7 +3,7 @@ const { create,
   getAccountByEmailAndPassword,
   update
 } = require('../crud/account.js');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 jwt
 const createAccount = async (req, res) => {
@@ -23,7 +23,7 @@ const createAccount = async (req, res) => {
 
 
   } catch (err) {
-    res.json({success:false,message:"Something went wrong"});
+    res.json({ success: false, message: "Something went wrong" });
     console.log(err.message);
   }
 };
@@ -32,13 +32,13 @@ const signin = async (req, res) => {
   try {
     const result = await getAccountByEmailAndPassword(req.body.email, req.body.password);
     if (result.success) {
-      const token = jwt.sign({ email: result.account.email, name: result.account.name, dateofbirth: result.account.dateofbirth, phone: result.account.phone, profileUrl: result.account.profileUrl, gender: result.account.gender,tags:result.account.tags,followers:result.account.followers,followings:result.account.followings }, process.env.JWT_SECRET);
+      const token = jwt.sign({ email: result.account.email, name: result.account.name, dateofbirth: result.account.dateofbirth, phone: result.account.phone, profileUrl: result.account.profileUrl, gender: result.account.gender, tags: result.account.tags, followers: result.account.followers, followings: result.account.followings }, process.env.JWT_SECRET);
       res.json({ success: true, token });
     } else {
       res.json({ success: false, message: "Something was wrong during your log in" })
     }
   } catch (err) {
-    res.json({success:false,message:"Something went wrong"});
+    res.json({ success: false, message: "Something went wrong" });
     console.log(err.message);
   }
 }
@@ -53,7 +53,7 @@ const updateAccount = async (req, res) => {
     const result = await update(email, { ...req.body, password: hashedPassword });
     if (result.success) {
       let account = await getAccount(email);
-      const token = jwt.sign({ email: account.account.email, name: account.account.name, dateofbirth: account.account.dateofbirth, phone: account.account.phone, profileUrl: account.account.profileUrl, gender: account.account.gender,tags:result.account.tags,followers:result.account.followers,followings:result.account.followings  }, process.env.JWT_SECRET);
+      const token = jwt.sign({ email: account.account.email, name: account.account.name, dateofbirth: account.account.dateofbirth, phone: account.account.phone, profileUrl: account.account.profileUrl, gender: account.account.gender, tags: result.account.tags, followers: result.account.followers, followings: result.account.followings }, process.env.JWT_SECRET);
       if (token) {
         res.json({ success: true, message: "Updated account successfully", updateAccount: result.updatedAccount, token });
       }
@@ -62,7 +62,7 @@ const updateAccount = async (req, res) => {
       res.json({ success: false, message: "You are sending unwanted requests" });
     }
   } catch (err) {
-    res.json({success:false,message:"Something went wrong"});
+    res.json({ success: false, message: "Something went wrong" });
     console.log(err);
   }
 
@@ -99,7 +99,7 @@ const follow = async (req, res) => {
       res.json({ success: false, message: "Something went wrong during following process" });
     }
   } catch (err) {
-    res.json({success:false,message:"Something went wrong"});
+    res.json({ success: false, message: "Something went wrong" });
     console.log(err);
   }
 }
@@ -137,7 +137,7 @@ const unFollow = async (req, res) => {
       res.json({ success: false, message: "Something went wrong during following process" });
     }
   } catch (err) {
-    res.json({success:false,message:"Something went wrong"});
+    res.json({ success: false, message: "Something went wrong" });
     console.log(err);
   }
 }
@@ -165,7 +165,7 @@ const addTag = async (req, res) => {
       res.json({ success: false, message: "Something went wrong during adding the tag" })
     }
   } catch (err) {
-    res.json({success:false,message:"Something went wrong"});
+    res.json({ success: false, message: "Something went wrong" });
     console.log(err);
   }
 
@@ -196,7 +196,7 @@ const removeTag = async (req, res) => {
       res.json({ success: false, message: "Something went wrong during removing the tag" })
     }
   } catch (err) {
-    res.json({success:false,message:"Something went wrong"});
+    res.json({ success: false, message: "Something went wrong" });
     console.log(err);
   }
 
@@ -204,7 +204,7 @@ const removeTag = async (req, res) => {
 }
 
 const addTags = async (req, res) => {
-  try{
+  try {
     const { email } = req.account;
     const result = await getAccount(email);
     let tags = Object.values(req.body);
@@ -213,27 +213,27 @@ const addTags = async (req, res) => {
       const accountTags = JSON.parse(account.tags);
       tags.forEach(tag => {
         if (accountTags.includes(tag)) {
-  
+
         } else {
           accountTags.unshift(tag);
         }
       });
-      const updatedResult=await update(email,{tags:JSON.stringify(accountTags)});
-      if(updatedResult.success){
-        res.json({success:true,message:"Added tags successfully"});
-      }else{
-        res.json({success:false,message:"Something went wrong during adding tags"});
+      const updatedResult = await update(email, { tags: JSON.stringify(accountTags) });
+      if (updatedResult.success) {
+        res.json({ success: true, message: "Added tags successfully" });
+      } else {
+        res.json({ success: false, message: "Something went wrong during adding tags" });
       }
-    }else{
-      res.json({success:false,message:"Your email is invalid"});
+    } else {
+      res.json({ success: false, message: "Your email is invalid" });
     }
-  
-  }catch(err){
-    res.json({success:false,message:"Something went wrong"});
+
+  } catch (err) {
+    res.json({ success: false, message: "Something went wrong" });
     console.log(err);
   }
-  
+
 
 }
 
-module.exports = { createAccount, signin, updateAccount, follow, unFollow, addTag, removeTag,addTags}
+module.exports = { createAccount, signin, updateAccount, follow, unFollow, addTag, removeTag, addTags }
