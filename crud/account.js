@@ -1,5 +1,5 @@
 const accountModel = require('../models/account.js');
-const bcrypt=require('bcrypt');
+const bcrypt=require('bcryptjs');
 
 const create = async (accountObj) => {
   try {
